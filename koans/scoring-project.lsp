@@ -50,8 +50,23 @@
 ; Your goal is to write the score method.
 
 (defun score (dice)
-  ; You need to write this method
-)
+  (let* 
+      ((dice-count (accum-dice dice))
+       (score 0))
+    (loop for i from 0 to 5 collect
+         (progn (if (>= (aref dice-count i) 3)
+                  (progn
+                    (incf score (if (= i 0) 1000 (* (+ i 1) 100)))
+                    (decf (aref dice-count i) 3)))
+                (if (= i 0) (incf score (* (aref dice-count i) 100)))
+                (if (= i 4) (incf score (* (aref dice-count i) 50)))))
+    score))
+  
+(defun accum-dice (dice)
+  (let* ((dice-count (make-array '(6) :initial-contents '(0 0 0 0 0 0))))
+    (loop for die in dice collect
+         (incf (aref dice-count (- die 1))))
+    dice-count))
 
 (define-test test-score-of-an-empty-list-is-zero
     (assert-equal 0 (score nil)))
